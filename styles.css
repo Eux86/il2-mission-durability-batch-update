@@ -1,0 +1,153 @@
+.lds-ripple {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-ripple div {
+  position: absolute;
+  border: 4px solid #fff;
+  opacity: 1;
+  border-radius: 50%;
+  animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+.lds-ripple div:nth-child(2) {
+  animation-delay: -0.5s;
+}
+@keyframes lds-ripple {
+  0% {
+    top: 36px;
+    left: 36px;
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    top: 0px;
+    left: 0px;
+    width: 72px;
+    height: 72px;
+    opacity: 0;
+  }
+}
+
+.container {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(45px);
+  border-radius: 10px;
+  padding: 30px;
+  height: 200px;
+  width: 400px;
+
+  -webkit-transition: 2s;
+  -moz-transition: 2s;
+  -ms-transition: 2s;
+  -o-transition: 2s;
+  transition: 2s;
+}
+
+.container.processing {
+  -moz-border-radius: 100px;
+  -webkit-border-radius: 100px;
+  border-radius: 100px;
+  height: 100px;
+  width: 100px;
+}
+
+.content.hide {
+  position: fixed;
+  -webkit-transition: 0.3s;
+  -moz-transition: 0.3s;
+  -ms-transition: 0.3s;
+  -o-transition: 0.3s;
+  transition: 0.3s;
+  opacity: 0;
+}
+
+.container > .loading {
+  -webkit-transition: 0.3s;
+  -moz-transition: 0.3s;
+  -ms-transition: 0.3s;
+  -o-transition: 0.3s;
+  transition: 0.3s;
+  opacity: 0;
+}
+.container > .loading.processing {
+  opacity: 1;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  color: #dbdbdb;
+}
+
+body {
+  background: rgb(2, 0, 36);
+  background: linear-gradient(
+    47deg,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(50, 50, 199, 1) 35%,
+    rgba(134, 7, 247, 1) 63%,
+    rgba(33, 5, 66, 1) 100%
+  );
+}
+
+.flex-center {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  flex-flow: column;
+}
+
+.button1 {
+  display: inline-block;
+  padding: 0.35em 1.2em;
+  border: 0.1em solid #ffffff;
+  margin: 0 0.3em 0.3em 0;
+  border-radius: 0.12em;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  color: #ffffff;
+  text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.button1:hover {
+  color: #000000;
+  background-color: #ffffff;
+}
+@media all and (max-width: 30em) {
+  .button1 {
+    display: block;
+    margin: 0.4em auto;
+  }
+}
+
+.form-row {
+  display: flex;
+  padding: 0.5em;
+  margin: 0;
+  padding: 0;
+}
+.form-row > label {
+  padding: 0.5em 1em 0.5em 0;
+  flex: 1;
+}
+.form-row > input {
+  flex: 2;
+}
+.form-row-centered {
+  display: flex;
+  justify-content: center;
+}
+.form-space {
+  height: 20px;
+}

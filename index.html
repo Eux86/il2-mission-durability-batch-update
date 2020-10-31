@@ -3,21 +3,36 @@
 
 <head>
   <title>Change durability values in mission file</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-  <h1>Modify durability values</h1>
-  <form>
-    <label for="durability-file">Durability CSV</label>
-    <input type="file" id="durability-file" />
-    <br />
-    <label for="mission-file">Mission file</label>
-    <input type="file" id="mission-file" />
-    <br />
-    <br />
-    <button type="button" id="run-button">Run script</button>
-  </form>
-  <div id="container"></div>
+  <div class="flex-center">
+    <div class="container">
+      <form class="content">
+        <h1>Modify durability values</h1>
+        <div class="form-row">
+          <label for="durability-file">Durability CSV</label>
+          <input type="file" class="button1" id="durability-file" />
+        </div>
+        <div class="form-row">
+          <label for="mission-file">Mission file</label>
+          <input type="file" class="button1" id="mission-file" />
+        </div>
+        <div class="form-space"></div>
+        <div class="form-row-centered">
+          <a type="button" class="button1" id="run-button">Run script</a>
+        </div>
+      </form>
+      <div class="loading flex-center">
+        <div class="lds-ripple">
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
 </body>
 <script>
   let durabilityText;
@@ -48,37 +63,49 @@
     document.body.removeChild(element);
   }
 
-  function process() {
-    let durabilityValues = durabilityText
-      .split('\n')
-      .filter(line => !line.startsWith('#') && !/^[\r\n]/.test(line))
-      .map(line => line.split(';'))
+  async function process() {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (!durabilityText || !missionFileText) {
+          resolve();
+          return;
+        }
 
-    const missionFileLines = missionFileText.split('\n');
+        let durabilityValues = durabilityText
+          .split('\n')
+          .filter(line => !line.startsWith('#') && !/^[\r\n]/.test(line))
+          .map(line => line.split(';'))
 
-    missionFileLines.forEach((line, index) => {
-      const currObject = /Model\s*=\s*".*\\(.*).mgm"/.exec(line)?.[1]
-      if (!currObject) return;
-      const override = durabilityValues.find(val => val[0] === currObject)?.[1].trim();
-      if (!override) return;
-      let indexToOverride;
-      // Check where's Durability in the lines after the model was found
-      missionFileLines
-        .slice(index, missionFileLines.length)
-        .some((lineAfterModel, indexAfterModel) => {
-          if (/Durability\s*=\s*/.test(lineAfterModel)) {
-            indexToOverride = index + indexAfterModel;
-            return true;
+        const missionFileLines = missionFileText.split('\n');
+
+        missionFileLines.forEach((line, index) => {
+          const currObject = /Model\s*=\s*".*\\(.*).mgm"/.exec(line)?.[1]
+          if (!currObject) return;
+          const override = durabilityValues.find(val => val[0] === currObject)?.[1].trim();
+          if (!override) return;
+          let indexToOverride;
+          // Check where's Durability in the lines after the model was found
+          missionFileLines
+            .slice(index, missionFileLines.length)
+            .some((lineAfterModel, indexAfterModel) => {
+              if (/Durability\s*=\s*/.test(lineAfterModel)) {
+                indexToOverride = index + indexAfterModel;
+                return true;
+              }
+              return false;
+            });
+          if (!indexToOverride) {
+            reject('No Durability found for ' + currObject);
+            throw new Error('No Durability found for ' + currObject);
           }
-          return false;
-        });
-      if (!indexToOverride) {
-        throw new Error('No Durability found for ' + currObject);
-      }
-      missionFileLines.splice(indexToOverride, 1, missionFileLines[indexToOverride].replace(/Durability = \d+;/,`Durability = ${override};`));
-    })
+          missionFileLines.splice(indexToOverride, 1, missionFileLines[indexToOverride].replace(/Durability = \d+;/, `Durability = ${override};`));
+        })
 
-    download(missionFileName, missionFileLines.join('\n'));
+        download(missionFileName, missionFileLines.join('\n'));
+        resolve();
+
+      }, 3000);
+    });
   }
 
   document.getElementById('durability-file').addEventListener('change', async (e) => {
@@ -94,8 +121,17 @@
     console.log(durabilityText);
   }, false);
 
-  document.getElementById('run-button').addEventListener('click', async (e) => {
-    process();
+  document.getElementById('run-button').addEventListener('click', (e) => {
+    document.getElementsByClassName('container')[0].classList.add('processing');
+    document.getElementsByClassName('content')[0].classList.add('hide');
+    document.getElementsByClassName('loading')[0].classList.add('processing');
+    process().then(() => {
+      document.getElementsByClassName('loading')[0].classList.remove('processing');
+      document.getElementsByClassName('container')[0].classList.remove('processing');
+      setTimeout(() => {
+        document.getElementsByClassName('content')[0].classList.remove('hide');
+      }, 1500);
+    });
   }, false);
 
 </script>
